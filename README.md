@@ -1,0 +1,2 @@
+# PrettyQR
+[WIP] Android application
