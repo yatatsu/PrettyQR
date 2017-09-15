@@ -1,0 +1,79 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+apply plugin: 'kotlin-kapt'
+
+android {
+  compileSdkVersion 26
+  buildToolsVersion "26.0.1"
+  defaultConfig {
+    applicationId "com.github.yatatsu.prettyqr"
+    minSdkVersion 14
+    targetSdkVersion 26
+    versionCode 1
+    versionName "0.1.0"
+    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    vectorDrawables.useSupportLibrary = true
+
+    resConfigs "en", "ja"
+  }
+
+  buildTypes {
+    debug {
+      debuggable true
+    }
+    release {
+      debuggable false
+      zipAlignEnabled true
+      shrinkResources true
+      minifyEnabled true
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+}
+
+ext {
+  lib_version = [
+      support_lib: '26.1.0'
+  ]
+}
+
+dependencies {
+  implementation fileTree(dir: 'libs', include: ['*.jar'])
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+
+  implementation project(':cameraview')
+
+  // support libs
+  implementation "com.android.support:support-v4:${lib_version.support_lib}"
+  implementation "com.android.support:appcompat-v7:${lib_version.support_lib}"
+  implementation "com.android.support:support-annotations:${lib_version.support_lib}"
+  implementation "com.android.support:design:${lib_version.support_lib}"
+  implementation "com.android.support:recyclerview-v7:${lib_version.support_lib}"
+  implementation "com.android.support:support-vector-drawable:${lib_version.support_lib}"
+  implementation "com.android.support.constraint:constraint-layout:1.0.2"
+
+  // play services
+  implementation 'com.google.android.gms:play-services-vision:11.2.2'
+
+  // logger
+  implementation 'com.jakewharton.timber:timber:4.5.1'
+
+  // permission
+  implementation 'com.github.hotchemi:permissionsdispatcher:2.3.1'
+  kapt 'com.github.hotchemi:permissionsdispatcher-processor:2.3.1'
+
+  testImplementation 'junit:junit:4.12'
+
+  androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.1', {
+    exclude group: 'com.android.support', module: 'support-annotations'
+  })
+}
