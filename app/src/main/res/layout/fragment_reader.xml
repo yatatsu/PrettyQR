@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-  <com.google.android.cameraview.CameraView
+  <com.github.yatatsu.prettyqr.reader.camera.CameraSourcePreview
       android:id="@+id/camera"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:adjustViewBounds="true"
-      android:background="@android:color/black"
-      />
+      android:layout_height="match_parent"
+      >
 
-</android.support.constraint.ConstraintLayout>
+    <com.github.yatatsu.prettyqr.reader.camera.GraphicOverlay
+        android:id="@+id/graphicOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+  </com.github.yatatsu.prettyqr.reader.camera.CameraSourcePreview>
+
+</FrameLayout>
