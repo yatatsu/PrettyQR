@@ -60,14 +60,14 @@ dependencies {
   implementation "com.android.support.constraint:constraint-layout:1.0.2"
 
   // play services
-  implementation 'com.google.android.gms:play-services-vision:11.2.2'
+  implementation 'com.google.android.gms:play-services-vision:11.4.0'
 
   // logger
   implementation 'com.jakewharton.timber:timber:4.5.1'
 
   // permission
-  implementation 'com.github.hotchemi:permissionsdispatcher:2.3.1'
-  kapt 'com.github.hotchemi:permissionsdispatcher-processor:2.3.1'
+  implementation 'com.github.hotchemi:permissionsdispatcher:3.0.1'
+  kapt 'com.github.hotchemi:permissionsdispatcher-processor:3.0.1'
 
   testImplementation 'junit:junit:4.12'
 

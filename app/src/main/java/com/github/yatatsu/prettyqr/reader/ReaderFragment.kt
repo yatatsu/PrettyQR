@@ -13,8 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.github.yatatsu.prettyqr.R
-import com.github.yatatsu.prettyqr.reader.ReaderFragmentPermissionsDispatcher.onRequestPermissionsResult
-import com.github.yatatsu.prettyqr.reader.ReaderFragmentPermissionsDispatcher.startCameraSafelyWithCheck
 import com.github.yatatsu.prettyqr.reader.camera.CameraSource
 import com.github.yatatsu.prettyqr.reader.camera.CameraSourcePreview
 import com.github.yatatsu.prettyqr.reader.camera.GraphicOverlay
@@ -31,7 +29,7 @@ import timber.log.Timber
 import java.io.IOException
 
 
-@RuntimePermissions() class ReaderFragment : Fragment() {
+@RuntimePermissions class ReaderFragment : Fragment() {
 
   private var cameraSource: CameraSource? = null
   private lateinit var preview: CameraSourcePreview
@@ -48,7 +46,7 @@ import java.io.IOException
 
   override fun onResume() {
     super.onResume()
-    startCameraSafelyWithCheck(this)
+    startCameraSafelyWithPermissionCheck()
   }
 
   override fun onPause() {
@@ -59,7 +57,7 @@ import java.io.IOException
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
       grantResults: IntArray) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    onRequestPermissionsResult(this, requestCode, grantResults)
+    onRequestPermissionsResult(requestCode, grantResults)
   }
 
   @SuppressLint("MissingPermission")
