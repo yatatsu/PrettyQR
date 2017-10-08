@@ -43,6 +43,7 @@ import java.util.Vector;
  * from the preview's coordinate system to the view coordinate system.</li>
  * </ol>
  */
+@Deprecated
 public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
     private final Object mLock = new Object();
     private int mPreviewWidth;

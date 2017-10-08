@@ -7,6 +7,8 @@ import android.content.IntentFilter
 import android.hardware.Camera
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,8 +17,12 @@ import android.widget.Toast
 import com.github.yatatsu.prettyqr.R
 import com.github.yatatsu.prettyqr.reader.camera.CameraSource
 import com.github.yatatsu.prettyqr.reader.camera.CameraSourcePreview
-import com.github.yatatsu.prettyqr.reader.camera.GraphicOverlay
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.gms.vision.Detector.Detections
 import com.google.android.gms.vision.MultiProcessor
+import com.google.android.gms.vision.MultiProcessor.Factory
+import com.google.android.gms.vision.Tracker
 import com.google.android.gms.vision.barcode.Barcode
 import com.google.android.gms.vision.barcode.BarcodeDetector
 import permissions.dispatcher.NeedsPermission
@@ -28,19 +34,24 @@ import permissions.dispatcher.RuntimePermissions
 import timber.log.Timber
 import java.io.IOException
 
+typealias TrackerCallback = (barcode: Barcode) -> Unit;
 
 @RuntimePermissions class ReaderFragment : Fragment() {
 
+  companion object {
+    const val RC_HANDLE_GMS = 9001
+  }
+
   private var cameraSource: CameraSource? = null
   private lateinit var preview: CameraSourcePreview
-    private lateinit var graphicOverlay: GraphicOverlay<BarcodeGraphic>
+  private lateinit var handler: Handler
 
   override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
       savedInstanceState: Bundle?): View? {
+    handler = Handler(Looper.getMainLooper())
     return inflater!!.inflate(R.layout.fragment_reader, container, false)
         .also {
           preview = it.findViewById(R.id.camera)
-          graphicOverlay = it.findViewById(R.id.graphicOverlay)
         }
   }
 
@@ -63,18 +74,21 @@ import java.io.IOException
   @SuppressLint("MissingPermission")
   @NeedsPermission(Manifest.permission.CAMERA) fun startCameraSafely() {
     Timber.d("start camera")
+    GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context.applicationContext)
+        .takeIf { it != ConnectionResult.SUCCESS }
+        ?.let { GoogleApiAvailability.getInstance().getErrorDialog(activity, it, RC_HANDLE_GMS).show() }
+
     if (cameraSource == null) {
       createDetector(true, false)
     }
     cameraSource?.let {
       try {
-        preview.start(cameraSource, graphicOverlay)
+        preview.start(cameraSource)
       } catch (e: IOException) {
         Timber.e(e, "Unable to start camera source.")
         cameraSource?.release()
         cameraSource = null
       }
-
     }
   }
 
@@ -93,14 +107,31 @@ import java.io.IOException
     // TODO
   }
 
+  class SimpleBarcodeTrackerFactory(private val callback: TrackerCallback) : Factory<Barcode> {
+    override fun create(barcode: Barcode?): Tracker<Barcode> {
+      return SimpleTracker(callback)
+    }
+  }
+
+  class SimpleTracker(private val callback: TrackerCallback): Tracker<Barcode>() {
+
+    override fun onUpdate(detections: Detections<Barcode>?, barcode: Barcode?) {
+      barcode?.let { callback(it) }
+    }
+  }
+
   private fun createDetector(autoFocus: Boolean, useFlash: Boolean) {
     Timber.d("start creating detector")
     val detector = BarcodeDetector.Builder(context)
         .setBarcodeFormats(Barcode.QR_CODE)
         .build()
-    val barcodeFactory = BarcodeTrackerFactory(graphicOverlay)
     detector.setProcessor(
-        MultiProcessor.Builder<Barcode>(barcodeFactory).build())
+        MultiProcessor.Builder<Barcode>(SimpleBarcodeTrackerFactory({ barcode ->
+          handler.post({
+            Toast.makeText(context, "barcode ${barcode.displayValue}",
+                Toast.LENGTH_SHORT).show()
+          })
+        })).build())
 
     if (!detector.isOperational) {
       // Note: The first time that an app using the barcode or face API is installed on a
