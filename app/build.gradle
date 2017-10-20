@@ -60,7 +60,7 @@ dependencies {
   implementation "com.android.support.constraint:constraint-layout:1.0.2"
 
   // play services
-  implementation 'com.google.android.gms:play-services-vision:11.4.0'
+  implementation 'com.google.android.gms:play-services-vision:11.4.2'
 
   // logger
   implementation 'com.jakewharton.timber:timber:4.5.1'

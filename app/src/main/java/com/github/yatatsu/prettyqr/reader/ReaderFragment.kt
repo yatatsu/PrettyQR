@@ -17,6 +17,7 @@ import android.widget.Toast
 import com.github.yatatsu.prettyqr.R
 import com.github.yatatsu.prettyqr.reader.camera.CameraSource
 import com.github.yatatsu.prettyqr.reader.camera.CameraSourcePreview
+import com.github.yatatsu.prettyqr.result.ResultActivity
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.vision.Detector.Detections
@@ -34,7 +35,7 @@ import permissions.dispatcher.RuntimePermissions
 import timber.log.Timber
 import java.io.IOException
 
-typealias TrackerCallback = (barcode: Barcode) -> Unit;
+typealias TrackerCallback = (barcode: Barcode) -> Unit
 
 @RuntimePermissions class ReaderFragment : Fragment() {
 
@@ -128,8 +129,8 @@ typealias TrackerCallback = (barcode: Barcode) -> Unit;
     detector.setProcessor(
         MultiProcessor.Builder<Barcode>(SimpleBarcodeTrackerFactory({ barcode ->
           handler.post({
-            Toast.makeText(context, "barcode ${barcode.displayValue}",
-                Toast.LENGTH_SHORT).show()
+            Timber.d("barcode = ${barcode.displayValue}")
+            ResultActivity.startActivity(activity, barcode.displayValue)
           })
         })).build())
 
